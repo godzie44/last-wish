@@ -61,3 +61,7 @@ func (u *User) AddFriend(friend *User) error {
 	u.friends.Add(friend)
 	return nil
 }
+
+func (u *User) Email() string {
+	return u.email
+}

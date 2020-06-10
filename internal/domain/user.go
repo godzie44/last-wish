@@ -16,14 +16,17 @@ type User struct {
 	friends *entity.Collection `d3:"many_to_many:<target_entity:lw/internal/domain/User,join_on:u1_id,reference_on:u2_id,join_table:lw_friend>"`
 }
 
+const maxWishesPerUser = 10
+const maxFriendsPerUser = 100
+
 func NewUser(name string, email string) (*User, error) {
-	return &User{name: name, email: email}, nil
+	return &User{name: name, email: email, wishes: entity.NewCollection(), friends: entity.NewCollection()}, nil
 }
 
 var errToManyWishes = errors.New("wish per user limit exceeded")
 
-func (u *User) AddWish(text string) error {
-	if u.wishes.Count() > 10 {
+func (u *User) MakeWish(text string) error {
+	if u.wishes.Count() >= maxWishesPerUser {
 		return errToManyWishes
 	}
 
@@ -51,7 +54,7 @@ func (u *User) GrantWishes(notifier NotifyService) {
 var ErrToManyFriends = errors.New("friend limit exceeded")
 
 func (u *User) AddFriend(friend *User) error {
-	if u.friends.Count() > 100 {
+	if u.friends.Count() >= maxFriendsPerUser {
 		return ErrToManyFriends
 	}
 

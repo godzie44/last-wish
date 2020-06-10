@@ -15,5 +15,5 @@ func (w *WishService) NewWish(ctx context.Context, userId int64, content string)
 		return err
 	}
 
-	return user.AddWish(content)
+	return user.MakeWish(content)
 }

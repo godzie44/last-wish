@@ -65,3 +65,7 @@ func (u *User) AddFriend(friend *User) error {
 func (u *User) Email() string {
 	return u.email
 }
+
+func (u *User) FriendsCount() int {
+	return u.friends.Count()
+}

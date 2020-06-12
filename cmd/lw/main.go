@@ -11,6 +11,7 @@ import (
 	"lw/internal/domain"
 	"lw/internal/infrastructure/repository"
 	"net/http"
+	"strconv"
 )
 
 func main() {
@@ -30,13 +31,13 @@ func main() {
 	}
 
 	userService := application.NewUserService(repository.NewD3UserRepo(d3rep))
-	newUser := &newUserHandler{service: userService}
+	wishService := application.NewWishService(repository.NewD3UserRepo(d3rep))
 
 	r := mux.NewRouter()
-	r.Handle("/user", newUser).Methods("POST")
-	r.HandleFunc("/ping", func(writer http.ResponseWriter, request *http.Request) {
-		writer.Write([]byte("pong"))
-	}).Methods("POST")
+	r.Handle("/user", &newUserHandler{userService}).Methods("POST")
+	r.Handle("/wish", &newWishHandler{wishService}).Methods("POST")
+	r.Handle("/user/friend", &addFriendHandler{userService}).Methods("POST")
+	r.Handle("/user/release", &releaseWishesHandler{userService}).Methods("POST")
 	r.Use(makeOrmMiddleware(d3orm))
 
 	log.Fatal(http.ListenAndServe("localhost:8089", r))
@@ -62,6 +63,44 @@ type newUserHandler struct {
 func (n *newUserHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	_ = request.ParseForm()
 	err := n.service.NewUser(request.Context(), request.Form.Get("name"), request.Form.Get("email"))
+	handleError(err, writer)
+}
+
+type newWishHandler struct {
+	service *application.WishService
+}
+
+func (n *newWishHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
+	_ = request.ParseForm()
+	userId, _ := strconv.Atoi(request.Form.Get("userId"))
+	err := n.service.NewWish(request.Context(), int64(userId), request.Form.Get("content"))
+	handleError(err, writer)
+}
+
+type addFriendHandler struct {
+	service *application.UserService
+}
+
+func (n *addFriendHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
+	_ = request.ParseForm()
+	userId, _ := strconv.Atoi(request.Form.Get("userId"))
+	friendId, _ := strconv.Atoi(request.Form.Get("friendId"))
+	err := n.service.AddFriend(request.Context(), int64(userId), int64(friendId))
+	handleError(err, writer)
+}
+
+type releaseWishesHandler struct {
+	service *application.UserService
+}
+
+func (n *releaseWishesHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
+	_ = request.ParseForm()
+	userId, _ := strconv.Atoi(request.Form.Get("userId"))
+	err := n.service.ReleaseWishes(request.Context(), int64(userId))
+	handleError(err, writer)
+}
+
+func handleError(err error, writer http.ResponseWriter) {
 	if err != nil {
 		writer.WriteHeader(500)
 		writer.Write([]byte(err.Error()))

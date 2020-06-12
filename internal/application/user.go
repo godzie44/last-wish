@@ -48,12 +48,12 @@ func (u *UserService) AddFriend(ctx context.Context, userId, friendId int64) err
 	return user.AddFriend(friend)
 }
 
-func (u *UserService) GrantWishes(ctx context.Context, userId int64) error {
+func (u *UserService) ReleaseWishes(ctx context.Context, userId int64) error {
 	user, err := u.repo.FindById(ctx, userId)
 	if err != nil {
 		return err
 	}
 
-	user.GrantWishes(u.notifier)
+	user.ReleaseWishes(u.notifier)
 	return nil
 }

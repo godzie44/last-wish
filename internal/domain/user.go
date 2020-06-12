@@ -39,7 +39,7 @@ type NotifyService interface {
 	NotifyFriend(friend *User)
 }
 
-func (u *User) GrantWishes(notifier NotifyService) {
+func (u *User) ReleaseWishes(notifier NotifyService) {
 	wishesIt := u.wishes.MakeIter()
 	for wishesIt.Next() {
 		wishesIt.Value().(*Wish).grant()

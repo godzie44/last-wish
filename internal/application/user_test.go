@@ -46,9 +46,9 @@ func TestAddFriendFailIfUserNotExists(t *testing.T) {
 	assert.EqualError(t, service.AddFriend(context.Background(), 0, 1), domain.ErrUserNotFound.Error())
 }
 
-func TestGrantWishesFailIfUserNotExists(t *testing.T) {
+func TestReleaseWishesFailIfUserNotExists(t *testing.T) {
 	repo := &inMemoryUserRepo{}
 	service := NewUserService(repo)
 
-	assert.EqualError(t, service.GrantWishes(context.Background(), 0), domain.ErrUserNotFound.Error())
+	assert.EqualError(t, service.ReleaseWishes(context.Background(), 0), domain.ErrUserNotFound.Error())
 }

@@ -11,8 +11,8 @@ type UserService struct {
 	notifier domain.NotifyService
 }
 
-func NewUserService(repo domain.UserRepository) *UserService {
-	return &UserService{repo: repo}
+func NewUserService(repo domain.UserRepository, notifier domain.NotifyService) *UserService {
+	return &UserService{repo: repo, notifier: notifier}
 }
 
 var ErrEmailNotUnique = errors.New("email must be")

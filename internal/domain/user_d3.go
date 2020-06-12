@@ -67,14 +67,15 @@ func (u *User) __d3_makeFieldSetter() entity.FieldSetter {
 		case "name":
 			eTyped.name = val.(string)
 			return nil
-		case "email":
-			eTyped.email = val.(string)
-			return nil
 		case "wishes":
 			eTyped.wishes = val.(*entity.Collection)
 			return nil
 		case "friends":
 			eTyped.friends = val.(*entity.Collection)
+			return nil
+
+		case "email":
+			eTyped.email = Email(val.(string))
 			return nil
 
 		case "id":

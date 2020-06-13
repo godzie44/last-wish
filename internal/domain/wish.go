@@ -2,6 +2,7 @@ package domain
 
 import (
 	"database/sql"
+	"log"
 	"time"
 )
 
@@ -29,5 +30,5 @@ func (w *Wish) Content() string {
 }
 
 func (w *Wish) grant() {
-
+	log.Printf("grant wish: %s", w.content)
 }

@@ -6,6 +6,7 @@ import (
 	"lw/internal/domain"
 )
 
+// UserService holds methods for work with user aggregate: add friends, create users, release wishes.
 type UserService struct {
 	repo     domain.UserRepository
 	notifier domain.NotifyService
@@ -15,8 +16,9 @@ func NewUserService(repo domain.UserRepository, notifier domain.NotifyService) *
 	return &UserService{repo: repo, notifier: notifier}
 }
 
-var ErrEmailNotUnique = errors.New("email must be")
+var ErrEmailNotUnique = errors.New("email must be unique")
 
+// NewUser create new user.
 func (u *UserService) NewUser(ctx context.Context, name, email string) error {
 	if _, err := u.repo.FindByEmail(ctx, email); err != nil {
 		if !errors.Is(err, domain.ErrUserNotFound) {
@@ -34,6 +36,7 @@ func (u *UserService) NewUser(ctx context.Context, name, email string) error {
 	return u.repo.Persists(ctx, user)
 }
 
+// AddFriend add friend relation between two users.
 func (u *UserService) AddFriend(ctx context.Context, userId, friendId int64) error {
 	user, err := u.repo.FindById(ctx, userId)
 	if err != nil {
@@ -48,6 +51,7 @@ func (u *UserService) AddFriend(ctx context.Context, userId, friendId int64) err
 	return user.AddFriend(friend)
 }
 
+// ReleaseWishes release all user wishes.
 func (u *UserService) ReleaseWishes(ctx context.Context, userId int64) error {
 	user, err := u.repo.FindById(ctx, userId)
 	if err != nil {

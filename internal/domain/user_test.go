@@ -43,3 +43,8 @@ func TestAddFriendAfterLimitExceeded(t *testing.T) {
 	assert.EqualError(t, user.AddFriend(friend), ErrToManyFriends.Error())
 	assert.Equal(t, maxFriendsPerUser, user.friends.Count())
 }
+
+func TestCantCreateUserWithLongName(t *testing.T) {
+	_, err := NewUser("veryveryveryveryveryveryveryveryvery long name", "some@mail.com")
+	assert.EqualError(t, err, errUserNameTooLong.Error())
+}

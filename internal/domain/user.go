@@ -4,9 +4,14 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/godzie44/d3/orm/entity"
+	"unicode/utf8"
 )
 
 type Email string
+
+func (e Email) isValid() bool {
+	return utf8.RuneCountInString(string(e)) < 255
+}
 
 //d3:entity
 //d3_table:lw_user
@@ -21,18 +26,34 @@ type User struct {
 const maxWishesPerUser = 10
 const maxFriendsPerUser = 100
 
-func NewUser(name string, email string) (*User, error) {
-	return &User{name: name, email: Email(email), wishes: entity.NewCollection(), friends: entity.NewCollection()}, nil
-}
-
 var errToManyWishes = errors.New("wish per user limit exceeded")
+var errInvalidEmail = errors.New("email is invalid")
+var errUserNameTooLong = errors.New("name is too long")
+
+func NewUser(name string, email string) (*User, error) {
+	em := Email(email)
+	if !em.isValid() {
+		return nil, errInvalidEmail
+	}
+
+	if utf8.RuneCountInString(name) > 40 {
+		return nil, errUserNameTooLong
+	}
+
+	return &User{name: name, email: em, wishes: entity.NewCollection(), friends: entity.NewCollection()}, nil
+}
 
 func (u *User) MakeWish(text string) error {
 	if u.wishes.Count() >= maxWishesPerUser {
 		return errToManyWishes
 	}
 
-	u.wishes.Add(newWish(text))
+	wish, err := newWish(text)
+	if err != nil {
+		return err
+	}
+
+	u.wishes.Add(wish)
 
 	return nil
 }

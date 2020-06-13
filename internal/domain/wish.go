@@ -2,8 +2,10 @@ package domain
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 	"time"
+	"unicode/utf8"
 )
 
 //d3:entity
@@ -14,11 +16,17 @@ type Wish struct {
 	createAt time.Time
 }
 
-func newWish(content string) *Wish {
+var ErrTooBigWish = errors.New("wish content is too big")
+
+func newWish(content string) (*Wish, error) {
+	if utf8.RuneCountInString(content) > 255 {
+		return nil, ErrTooBigWish
+	}
+
 	return &Wish{
 		content:  content,
 		createAt: time.Now(),
-	}
+	}, nil
 }
 
 func (w *Wish) CreateAt() time.Time {

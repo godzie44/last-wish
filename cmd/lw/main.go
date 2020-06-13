@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/godzie44/d3/adapter"
 	d3pgx "github.com/godzie44/d3/adapter/pgx"
 	"github.com/godzie44/d3/orm"
@@ -103,8 +104,18 @@ func (n *releaseWishesHandler) ServeHTTP(writer http.ResponseWriter, request *ht
 }
 
 func handleError(err error, writer http.ResponseWriter) {
+	type response struct {
+		Ok  bool   `json:"ok"`
+		Msg string `json:"msg"`
+	}
+
+	var resp = response{Ok: true}
 	if err != nil {
 		writer.WriteHeader(500)
-		writer.Write([]byte(err.Error()))
+		resp.Ok = false
+		resp.Msg = err.Error()
 	}
+
+	jsonResp, _ := json.Marshal(resp)
+	writer.Write(jsonResp)
 }

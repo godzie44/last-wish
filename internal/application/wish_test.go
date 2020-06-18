@@ -10,7 +10,7 @@ import (
 func TestNewWish(t *testing.T) {
 	repo := &inMemoryUserRepo{}
 	user, _ := domain.NewUser("test", "test@test.com")
-	assert.NoError(t, repo.Persists(context.Background(), user))
+	assert.NoError(t, repo.Add(context.Background(), user))
 	service := NewWishService(repo)
 	assert.NoError(t, service.NewWish(context.Background(), 0, "some title"))
 }
@@ -25,7 +25,7 @@ type inMemoryUserRepo struct {
 	users []*domain.User
 }
 
-func (i *inMemoryUserRepo) Persists(_ context.Context, u *domain.User) error {
+func (i *inMemoryUserRepo) Add(_ context.Context, u *domain.User) error {
 	i.users = append(i.users, u)
 	return nil
 }

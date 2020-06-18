@@ -8,7 +8,7 @@ import (
 var ErrUserNotFound = errors.New("user not found")
 
 type UserRepository interface {
-	Persists(ctx context.Context, u *User) error
+	Add(ctx context.Context, u *User) error
 	FindById(ctx context.Context, id int64) (*User, error)
 	FindByEmail(ctx context.Context, mail string) (*User, error)
 }

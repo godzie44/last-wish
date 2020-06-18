@@ -85,6 +85,10 @@ func (u *User) AddFriend(friend *User) error {
 	return nil
 }
 
+func (u *User) ID() int64 {
+	return u.id.Int64
+}
+
 func (u *User) Email() string {
 	return string(u.email)
 }

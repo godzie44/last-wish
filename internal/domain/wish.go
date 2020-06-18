@@ -29,6 +29,10 @@ func newWish(content string) (*Wish, error) {
 	}, nil
 }
 
+func (w *Wish) ID() int64 {
+	return w.id.Int64
+}
+
 func (w *Wish) CreateAt() time.Time {
 	return w.createAt
 }

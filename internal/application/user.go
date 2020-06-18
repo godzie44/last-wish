@@ -19,21 +19,25 @@ func NewUserService(repo domain.UserRepository, notifier domain.NotifyService) *
 var ErrEmailNotUnique = errors.New("email must be unique")
 
 // NewUser create new user.
-func (u *UserService) NewUser(ctx context.Context, name, email string) error {
+func (u *UserService) NewUser(ctx context.Context, name, email string) (int64, error) {
 	if _, err := u.repo.FindByEmail(ctx, email); err != nil {
 		if !errors.Is(err, domain.ErrUserNotFound) {
-			return err
+			return 0, err
 		}
 	} else {
-		return ErrEmailNotUnique
+		return 0, ErrEmailNotUnique
 	}
 
 	user, err := domain.NewUser(name, email)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return u.repo.Persists(ctx, user)
+	if err = u.repo.Add(ctx, user); err != nil {
+		return 0, err
+	}
+
+	return user.ID(), err
 }
 
 // AddFriend add friend relation between two users.

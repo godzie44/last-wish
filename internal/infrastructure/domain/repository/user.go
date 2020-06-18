@@ -7,19 +7,23 @@ import (
 )
 
 type D3UserRepo struct {
-	d3Rep *orm.Repository
+	d3Repo *orm.Repository
 }
 
 func NewD3UserRepo(d3Rep *orm.Repository) *D3UserRepo {
-	return &D3UserRepo{d3Rep: d3Rep}
+	return &D3UserRepo{d3Repo: d3Rep}
 }
 
-func (d *D3UserRepo) Persists(ctx context.Context, u *domain.User) error {
-	return d.d3Rep.Persists(ctx, u)
+func (d *D3UserRepo) Add(ctx context.Context, u *domain.User) error {
+	if err := d.d3Repo.Persists(ctx, u); err != nil {
+		return err
+	}
+
+	return orm.Session(ctx).Flush()
 }
 
 func (d *D3UserRepo) FindById(ctx context.Context, id int64) (*domain.User, error) {
-	e, err := d.d3Rep.FindOne(ctx, d.d3Rep.MakeQuery().AndWhere("id=?", id))
+	e, err := d.d3Repo.FindOne(ctx, d.d3Repo.MakeQuery().AndWhere("id=?", id))
 	if err != nil {
 		return nil, err
 	}
@@ -28,7 +32,7 @@ func (d *D3UserRepo) FindById(ctx context.Context, id int64) (*domain.User, erro
 }
 
 func (d *D3UserRepo) FindByEmail(ctx context.Context, mail string) (*domain.User, error) {
-	e, err := d.d3Rep.FindOne(ctx, d.d3Rep.MakeQuery().AndWhere("email=?", mail))
+	e, err := d.d3Repo.FindOne(ctx, d.d3Repo.MakeQuery().AndWhere("email=?", mail))
 	if err != nil {
 		if err == orm.ErrEntityNotFound {
 			return nil, domain.ErrUserNotFound

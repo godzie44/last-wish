@@ -11,8 +11,9 @@ import (
 	"log"
 	"lw/internal/application"
 	"lw/internal/domain"
-	"lw/internal/infrastructure/repository"
-	"lw/internal/infrastructure/service"
+	appinfr "lw/internal/infrastructure/application"
+	"lw/internal/infrastructure/domain/repository"
+	"lw/internal/infrastructure/domain/service"
 	"net/http"
 	"strconv"
 )
@@ -33,15 +34,65 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	userService := application.NewUserService(repository.NewD3UserRepo(d3rep), &service.NotifyService{})
-	wishService := application.NewWishService(repository.NewD3UserRepo(d3rep))
+	userService := appinfr.NewTransactionalUserService(
+		application.NewUserService(repository.NewD3UserRepo(d3rep), &service.NotifyService{}),
+	)
+	wishService := appinfr.NewTransactionalWishService(
+		application.NewWishService(repository.NewD3UserRepo(d3rep)),
+	)
 
 	r := mux.NewRouter()
-	r.Handle("/user", &newUserHandler{userService}).Methods("POST")
-	r.Handle("/wish", &newWishHandler{wishService}).Methods("POST")
-	r.Handle("/user/friend", &addFriendHandler{userService}).Methods("POST")
-	r.Handle("/user/release", &releaseWishesHandler{userService}).Methods("POST")
-	r.Use(makeOrmMiddleware(d3orm))
+	{
+		r.HandleFunc("/user", func(writer http.ResponseWriter, request *http.Request) {
+			_ = request.ParseForm()
+			id, err := userService.NewUser(request.Context(), request.Form.Get("name"), request.Form.Get("email"))
+			if err != nil {
+				handleError(err, writer)
+			} else {
+				handleOk(struct {
+					ID int64
+				}{
+					ID: id,
+				}, writer)
+			}
+		}).Methods("POST")
+
+		r.HandleFunc("/wish", func(writer http.ResponseWriter, request *http.Request) {
+			_ = request.ParseForm()
+			userId, _ := strconv.Atoi(request.Form.Get("userId"))
+			err := wishService.NewWish(request.Context(), int64(userId), request.Form.Get("content"))
+			if err != nil {
+				handleError(err, writer)
+			} else {
+				handleOk(nil, writer)
+			}
+		}).Methods("POST")
+
+		r.HandleFunc("/user/friend", func(writer http.ResponseWriter, request *http.Request) {
+			_ = request.ParseForm()
+			userId, _ := strconv.Atoi(request.Form.Get("userId"))
+			friendId, _ := strconv.Atoi(request.Form.Get("friendId"))
+			err := userService.AddFriend(request.Context(), int64(userId), int64(friendId))
+			if err != nil {
+				handleError(err, writer)
+			} else {
+				handleOk(nil, writer)
+			}
+		}).Methods("POST")
+
+		r.HandleFunc("/user/release", func(writer http.ResponseWriter, request *http.Request) {
+			_ = request.ParseForm()
+			userId, _ := strconv.Atoi(request.Form.Get("userId"))
+			err := userService.ReleaseWishes(request.Context(), int64(userId))
+			if err != nil {
+				handleError(err, writer)
+			} else {
+				handleOk(nil, writer)
+			}
+		}).Methods("POST")
+
+		r.Use(makeOrmMiddleware(d3orm))
+	}
 
 	log.Fatal(http.ListenAndServe("localhost:8089", r))
 }
@@ -51,71 +102,28 @@ func makeOrmMiddleware(d3orm *orm.Orm) mux.MiddlewareFunc {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := d3orm.CtxWithSession(context.Background())
 			next.ServeHTTP(w, r.WithContext(ctx))
-			if err := orm.Session(ctx).Flush(); err != nil {
-				w.WriteHeader(500)
-				_, _ = w.Write([]byte("internal error"))
-			}
 		})
 	}
 }
 
-type newUserHandler struct {
-	service *application.UserService
-}
-
-func (n *newUserHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	_ = request.ParseForm()
-	err := n.service.NewUser(request.Context(), request.Form.Get("name"), request.Form.Get("email"))
-	handleError(err, writer)
-}
-
-type newWishHandler struct {
-	service *application.WishService
-}
-
-func (n *newWishHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	_ = request.ParseForm()
-	userId, _ := strconv.Atoi(request.Form.Get("userId"))
-	err := n.service.NewWish(request.Context(), int64(userId), request.Form.Get("content"))
-	handleError(err, writer)
-}
-
-type addFriendHandler struct {
-	service *application.UserService
-}
-
-func (n *addFriendHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	_ = request.ParseForm()
-	userId, _ := strconv.Atoi(request.Form.Get("userId"))
-	friendId, _ := strconv.Atoi(request.Form.Get("friendId"))
-	err := n.service.AddFriend(request.Context(), int64(userId), int64(friendId))
-	handleError(err, writer)
-}
-
-type releaseWishesHandler struct {
-	service *application.UserService
-}
-
-func (n *releaseWishesHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	_ = request.ParseForm()
-	userId, _ := strconv.Atoi(request.Form.Get("userId"))
-	err := n.service.ReleaseWishes(request.Context(), int64(userId))
-	handleError(err, writer)
-}
-
 func handleError(err error, writer http.ResponseWriter) {
 	type response struct {
-		Ok  bool   `json:"ok"`
-		Msg string `json:"msg"`
+		Error string `json:"error"`
 	}
 
-	var resp = response{Ok: true}
-	if err != nil {
-		writer.WriteHeader(500)
-		resp.Ok = false
-		resp.Msg = err.Error()
-	}
+	var resp = response{}
+	writer.WriteHeader(500)
+	resp.Error = err.Error()
 
 	jsonResp, _ := json.Marshal(resp)
+	writer.Write(jsonResp)
+}
+
+func handleOk(data interface{}, writer http.ResponseWriter) {
+	type response struct {
+		Result interface{} `json:"result"`
+	}
+
+	jsonResp, _ := json.Marshal(response{Result: data})
 	writer.Write(jsonResp)
 }

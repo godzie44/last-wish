@@ -1,8 +1,8 @@
 package service
 
 import (
+	"github.com/godzie44/lw/internal/domain"
 	"log"
-	"lw/internal/domain"
 )
 
 type NotifyService struct {

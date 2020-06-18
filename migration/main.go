@@ -5,9 +5,9 @@ import (
 	"github.com/godzie44/d3/adapter"
 	d3pgx "github.com/godzie44/d3/adapter/pgx"
 	"github.com/godzie44/d3/orm"
+	"github.com/godzie44/lw/internal/domain"
 	"github.com/jackc/pgx/v4"
 	"log"
-	"lw/internal/domain"
 )
 
 func main() {

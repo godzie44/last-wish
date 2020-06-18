@@ -2,8 +2,8 @@ package application
 
 import (
 	"context"
+	"github.com/godzie44/lw/internal/domain"
 	"github.com/stretchr/testify/assert"
-	"lw/internal/domain"
 	"testing"
 )
 

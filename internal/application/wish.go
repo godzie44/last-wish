@@ -2,7 +2,7 @@ package application
 
 import (
 	"context"
-	"lw/internal/domain"
+	"github.com/godzie44/lw/internal/domain"
 )
 
 // WishService holds methods for work with wishes.

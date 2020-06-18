@@ -3,7 +3,7 @@ package application
 import (
 	"context"
 	"errors"
-	"lw/internal/domain"
+	"github.com/godzie44/lw/internal/domain"
 )
 
 // UserService holds methods for work with user aggregate: add friends, create users, release wishes.

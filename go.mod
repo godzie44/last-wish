@@ -1,4 +1,4 @@
-module lw
+module github.com/godzie44/lw
 
 go 1.14
 
@@ -8,3 +8,4 @@ require (
 	github.com/jackc/pgx/v4 v4.2.1
 	github.com/stretchr/testify v1.4.0
 )
+

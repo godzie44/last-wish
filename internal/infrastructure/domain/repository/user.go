@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 	"github.com/godzie44/d3/orm"
-	"lw/internal/domain"
+	"github.com/godzie44/lw/internal/domain"
 )
 
 type D3UserRepo struct {

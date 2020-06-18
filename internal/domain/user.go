@@ -19,8 +19,8 @@ type User struct {
 	id      sql.NullInt64      `d3:"pk:auto"`
 	name    string             `d3:"column:name"`
 	email   Email              `d3:"column:email"`
-	wishes  *entity.Collection `d3:"one_to_many:<target_entity:lw/internal/domain/Wish,join_on:user_id,delete:nullable>"`
-	friends *entity.Collection `d3:"many_to_many:<target_entity:lw/internal/domain/User,join_on:u1_id,reference_on:u2_id,join_table:lw_friend>"`
+	wishes  *entity.Collection `d3:"one_to_many:<target_entity:github.com/godzie44/lw/internal/domain/Wish,join_on:user_id,delete:nullable>"`
+	friends *entity.Collection `d3:"many_to_many:<target_entity:github.com/godzie44/lw/internal/domain/User,join_on:u1_id,reference_on:u2_id,join_table:lw_friend>"`
 }
 
 const maxWishesPerUser = 10

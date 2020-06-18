@@ -3,7 +3,7 @@ package application
 import (
 	"context"
 	"github.com/godzie44/d3/orm"
-	"lw/internal/application"
+	"github.com/godzie44/lw/internal/application"
 )
 
 type transactionalUserService struct {

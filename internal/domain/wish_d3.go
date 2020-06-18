@@ -2,10 +2,10 @@
 
 package domain
 
-import "github.com/godzie44/d3/orm/entity"
-import "time"
 import "database/sql/driver"
 import "fmt"
+import "github.com/godzie44/d3/orm/entity"
+import "time"
 
 func (w *Wish) D3Token() entity.MetaToken {
 	return entity.MetaToken{

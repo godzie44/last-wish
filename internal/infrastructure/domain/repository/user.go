@@ -23,7 +23,7 @@ func (d *D3UserRepo) Add(ctx context.Context, u *domain.User) error {
 }
 
 func (d *D3UserRepo) FindById(ctx context.Context, id int64) (*domain.User, error) {
-	e, err := d.d3Repo.FindOne(ctx, d.d3Repo.MakeQuery().AndWhere("id=?", id))
+	e, err := d.d3Repo.FindOne(ctx, d.d3Repo.Select().AndWhere("id", "=", id))
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +32,7 @@ func (d *D3UserRepo) FindById(ctx context.Context, id int64) (*domain.User, erro
 }
 
 func (d *D3UserRepo) FindByEmail(ctx context.Context, mail string) (*domain.User, error) {
-	e, err := d.d3Repo.FindOne(ctx, d.d3Repo.MakeQuery().AndWhere("email=?", mail))
+	e, err := d.d3Repo.FindOne(ctx, d.d3Repo.Select().AndWhere("email", "=", mail))
 	if err != nil {
 		if err == orm.ErrEntityNotFound {
 			return nil, domain.ErrUserNotFound

@@ -19,6 +19,8 @@ github.com/godzie44/d3 v0.0.0-20200615220309-3aee0fd58038 h1:2uuaE/w2xn1Ngqbm114
 github.com/godzie44/d3 v0.0.0-20200615220309-3aee0fd58038/go.mod h1:dDm/XTCepp4JOjg/eCDkiScNjAN7R6oiNgizJiQ8wOY=
 github.com/godzie44/d3 v0.0.0-20200618070412-b2f92430731c h1:l3shUcVJcbHHLaybgYhIOYVA07tEXExGRpmhXYL48ks=
 github.com/godzie44/d3 v0.0.0-20200618070412-b2f92430731c/go.mod h1:mmQI+uO1ObZOq25FjkLm0upbq/boDEK2Pk7V1pXNNbQ=
+github.com/godzie44/d3 v0.1.0 h1:depGB8ZEKC6tqW+w51qpMlxixUD9jiSnTkWry452dF0=
+github.com/godzie44/d3 v0.1.0/go.mod h1:mmQI+uO1ObZOq25FjkLm0upbq/boDEK2Pk7V1pXNNbQ=
 github.com/gofrs/uuid v3.2.0+incompatible h1:y12jRkkFxsd7GpqdSZ+/KCs/fJbqpEXSGd4+jfEaewE=
 github.com/gofrs/uuid v3.2.0+incompatible/go.mod h1:b2aQJv3Z4Fp6yNu3cdSllBxTCLRxnplIgP/c0N/04lM=
 github.com/golang/protobuf v1.3.1/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=

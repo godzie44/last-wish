@@ -19,8 +19,8 @@ type User struct {
 	id      sql.NullInt64      `d3:"pk:auto"`
 	name    string             `d3:"column:name"`
 	email   Email              `d3:"column:email"`
-	wishes  *entity.Collection `d3:"one_to_many:<target_entity:github.com/godzie44/lw/internal/domain/Wish,join_on:user_id,delete:nullable>"`
-	friends *entity.Collection `d3:"many_to_many:<target_entity:github.com/godzie44/lw/internal/domain/User,join_on:u1_id,reference_on:u2_id,join_table:lw_friend>"`
+	wishes  *entity.Collection `d3:"one_to_many:<target_entity:Wish,join_on:user_id,delete:cascade>"`
+	friends *entity.Collection `d3:"many_to_many:<target_entity:User,join_on:u1_id,reference_on:u2_id,join_table:lw_friend>"`
 }
 
 const maxWishesPerUser = 10
@@ -95,4 +95,28 @@ func (u *User) Email() string {
 
 func (u *User) FriendsCount() int {
 	return u.friends.Count()
+}
+
+var errWishNotFound = errors.New("wish not found")
+
+func (u *User) UpdateWish(id int64, content string) error {
+	wishesIt := u.wishes.MakeIter()
+	for wishesIt.Next() {
+		wish := wishesIt.Value().(*Wish)
+		if wish.ID() == id {
+			wish.ChangeContent(content)
+			return nil
+		}
+	}
+
+	return errWishNotFound
+}
+
+func (u *User) DeleteWish(id int64) {
+	for i := 0; i < u.wishes.Count(); i++ {
+		if u.wishes.Get(i).(*Wish).ID() == id {
+			u.wishes.Remove(i)
+			return
+		}
+	}
 }

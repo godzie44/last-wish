@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"github.com/godzie44/d3/adapter"
 	d3pgx "github.com/godzie44/d3/adapter/pgx"
 	"github.com/godzie44/d3/orm"
 	"github.com/godzie44/lw/internal/domain"
@@ -16,7 +15,7 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	d3orm := orm.NewOrm(d3pgx.NewGoPgXAdapter(pg, &adapter.SquirrelAdapter{}))
+	d3orm := orm.New(d3pgx.NewPgxDriver(pg))
 	if err := d3orm.Register(&domain.User{}, &domain.Wish{}); err != nil {
 		log.Fatal(err.Error())
 	}

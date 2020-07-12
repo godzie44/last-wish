@@ -12,3 +12,8 @@ type UserRepository interface {
 	FindById(ctx context.Context, id int64) (*User, error)
 	FindByEmail(ctx context.Context, mail string) (*User, error)
 }
+
+type WishRepository interface {
+	Delete(ctx context.Context, wish *Wish) error
+	FindByUserIdAndId(ctx context.Context, userId, wishId int64) (*Wish, error)
+}

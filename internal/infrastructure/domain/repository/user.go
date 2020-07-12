@@ -10,7 +10,7 @@ type D3UserRepo struct {
 	d3Repo *orm.Repository
 }
 
-func NewD3UserRepo(d3Rep *orm.Repository) *D3UserRepo {
+func NewUserRepository(d3Rep *orm.Repository) *D3UserRepo {
 	return &D3UserRepo{d3Repo: d3Rep}
 }
 

@@ -41,6 +41,10 @@ func (w *Wish) Content() string {
 	return w.content
 }
 
+func (w *Wish) ChangeContent(content string) {
+	w.content = content
+}
+
 func (w *Wish) grant() {
 	log.Printf("grant wish: %s", w.content)
 }

@@ -111,12 +111,3 @@ func (u *User) UpdateWish(id int64, content string) error {
 
 	return errWishNotFound
 }
-
-func (u *User) DeleteWish(id int64) {
-	for i := 0; i < u.wishes.Count(); i++ {
-		if u.wishes.Get(i).(*Wish).ID() == id {
-			u.wishes.Remove(i)
-			return
-		}
-	}
-}

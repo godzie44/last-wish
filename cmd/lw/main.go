@@ -1,9 +1,8 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
-	d3pgx "github.com/godzie44/d3/adapter/pgx"
+	"github.com/godzie44/d3/adapter/pgx"
 	"github.com/godzie44/d3/orm"
 	"github.com/godzie44/lw/internal/application"
 	"github.com/godzie44/lw/internal/domain"
@@ -11,34 +10,50 @@ import (
 	"github.com/godzie44/lw/internal/infrastructure/domain/repository"
 	"github.com/godzie44/lw/internal/infrastructure/domain/service"
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"log"
 	"net/http"
+	_ "net/http/pprof"
 	"strconv"
 )
 
 func main() {
-	pg, err := pgx.Connect(context.Background(), "postgres://postgres:postgres@0.0.0.0:5432/lw")
+	go func() {
+		log.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
+
+	cfg, err := pgxpool.ParseConfig("postgres://postgres:postgres@0.0.0.0:5432/lw")
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+	driver, err := pgx.NewPgxPoolDriver(cfg)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	defer driver.Close()
 
-	d3orm := orm.New(d3pgx.NewPgxDriver(pg))
+	d3orm := orm.New(driver)
 	if err := d3orm.Register(&domain.User{}, &domain.Wish{}); err != nil {
 		log.Fatal(err.Error())
 	}
 
-	d3UserRep, err := d3orm.MakeRepository(&domain.User{})
-	if err != nil {
-		log.Fatal(err.Error())
+	var userRepository domain.UserRepository
+	{
+		d3UserRep, err := d3orm.MakeRepository(&domain.User{})
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		userRepository = repository.NewUserRepository(d3UserRep)
 	}
-	userRepository := repository.NewUserRepository(d3UserRep)
 
-	d3WishRep, err := d3orm.MakeRepository(&domain.Wish{})
-	if err != nil {
-		log.Fatal(err.Error())
+	var wishRepository domain.WishRepository
+	{
+		d3WishRep, err := d3orm.MakeRepository(&domain.Wish{})
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		wishRepository = repository.NewWishRepository(d3WishRep)
 	}
-	wishRepository := repository.NewWishRepository(d3WishRep)
 
 	userService := appinfr.NewTransactionalUserService(
 		application.NewUserService(userRepository, &service.NotifyService{}),

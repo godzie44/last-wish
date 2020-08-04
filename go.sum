@@ -13,6 +13,8 @@ github.com/go-sql-driver/mysql v1.4.1/go.mod h1:zAC/RDZ24gD3HViQzih4MyKcchzm+sOG
 github.com/go-stack/stack v1.8.0/go.mod h1:v0f6uXyyMGvRgIKkXu+yp6POWl0qKG85gN/melR3HDY=
 github.com/godzie44/d3 v0.1.2 h1:hOa/IRvdqjITcvH5c7w/bxTe6cOVSGCC6ag0BY3rr68=
 github.com/godzie44/d3 v0.1.2/go.mod h1:nJDO3BMTdyYRhl5z0+Xq1fGwwOI76Fnbh8yKOB0yrqo=
+github.com/godzie44/d3 v0.1.4 h1:Hn850qYk1Qkb8OeDc9d2WGRmKCUmuCwLBIFw5XUWIJQ=
+github.com/godzie44/d3 v0.1.4/go.mod h1:SvMpDR4BIlYcAlCU50K4f2ra57EBEv99HEzNuDx4ED0=
 github.com/gofrs/uuid v3.2.0+incompatible h1:y12jRkkFxsd7GpqdSZ+/KCs/fJbqpEXSGd4+jfEaewE=
 github.com/gofrs/uuid v3.2.0+incompatible/go.mod h1:b2aQJv3Z4Fp6yNu3cdSllBxTCLRxnplIgP/c0N/04lM=
 github.com/golang/protobuf v1.3.1/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=

@@ -24,9 +24,9 @@ All transport level code are written in main.go.
 
 ### Http endpoints.
 
-- /user POST - create new user.
-- /user/{user_id}/friend/{user_id} POST - add friend for user.
-- /user/{user_id}/wish POST - create new wish.
-- /user/{user_id}/wish/{wish_id} PUT - update wish.
-- /user/{user_id}/wish/{wish_id} DELETE - delete wish.
-- /user/{user_id}/wish/release POST - release all user wishes.
+- POST /user - create new user.
+- POST /user/{user_id}/friend/{user_id} - add friend for user.
+- POST /user/{user_id}/wish - create new wish.
+- PUT /user/{user_id}/wish/{wish_id} - update wish.
+- DELETE /user/{user_id}/wish/{wish_id} - delete wish.
+- POST /user/{user_id}/wish/release - release all user wishes.

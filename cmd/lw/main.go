@@ -14,15 +14,12 @@ import (
 	"log"
 	"net/http"
 	_ "net/http/pprof"
+	"os"
 	"strconv"
 )
 
 func main() {
-	go func() {
-		log.Println(http.ListenAndServe("localhost:6060", nil))
-	}()
-
-	cfg, err := pgxpool.ParseConfig("postgres://postgres:postgres@0.0.0.0:5432/lw")
+	cfg, err := pgxpool.ParseConfig(os.Getenv("PG_URL"))
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -77,6 +74,10 @@ func main() {
 				}, writer)
 			}
 		}).Methods("POST")
+
+		r.HandleFunc("/q", func(writer http.ResponseWriter, request *http.Request) {
+			writer.Write([]byte("hi!"))
+		}).Methods("GET")
 
 		r.HandleFunc("/user/{id}/wish", func(writer http.ResponseWriter, request *http.Request) {
 			vars := mux.Vars(request)
@@ -141,7 +142,7 @@ func main() {
 		r.Use(makeOrmMiddleware(d3orm))
 	}
 
-	log.Fatal(http.ListenAndServe("localhost:8089", r))
+	log.Fatal(http.ListenAndServe("0.0.0.0:8080", r))
 }
 
 func makeOrmMiddleware(d3orm *orm.Orm) mux.MiddlewareFunc {

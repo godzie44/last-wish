@@ -1,6 +1,19 @@
 version: '3.6'
 
 services:
+  app:
+    build:
+      context: ./..
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      PG_URL: postgres://postgres:postgres@postgres:5432/lw
+    networks:
+      - lw
+
   postgres:
     image: postgres:11.4-alpine
     environment:
@@ -10,8 +23,6 @@ services:
       PGDATA: /data/postgres
     volumes:
       - postgres:/data/postgres
-    ports:
-      - "5432:5432"
     networks:
       - lw
 

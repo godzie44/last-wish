@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/godzie44/d3/adapter/pgx"
 	"github.com/godzie44/d3/orm"
@@ -19,7 +20,7 @@ import (
 )
 
 func main() {
-	cfg, err := pgxpool.ParseConfig(os.Getenv("PG_URL"))
+	cfg, err := pgxpool.ParseConfig(os.Getenv("PG_DSN"))
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -31,6 +32,10 @@ func main() {
 
 	d3orm := orm.New(driver)
 	if err := d3orm.Register(&domain.User{}, &domain.Wish{}); err != nil {
+		log.Fatal(err.Error())
+	}
+
+	if err = createSchema(d3orm, driver.UnwrapConn().(*pgxpool.Pool)); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -74,10 +79,6 @@ func main() {
 				}, writer)
 			}
 		}).Methods("POST")
-
-		r.HandleFunc("/q", func(writer http.ResponseWriter, request *http.Request) {
-			writer.Write([]byte("hi!"))
-		}).Methods("GET")
 
 		r.HandleFunc("/user/{id}/wish", func(writer http.ResponseWriter, request *http.Request) {
 			vars := mux.Vars(request)
@@ -174,4 +175,14 @@ func handleOk(data interface{}, writer http.ResponseWriter) {
 
 	jsonResp, _ := json.Marshal(response{Result: data})
 	writer.Write(jsonResp)
+}
+
+func createSchema(orm *orm.Orm, conn *pgxpool.Pool) error {
+	sql, err := orm.GenerateSchema()
+	if err != nil {
+		return err
+	}
+
+	_, err = conn.Exec(context.Background(), sql)
+	return err
 }

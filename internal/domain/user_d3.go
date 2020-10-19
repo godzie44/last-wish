@@ -17,6 +17,10 @@ func (u *User) D3Token() entity.MetaToken {
 			NewInstance:   u.__d3_makeInstantiator(),
 			Copy:          u.__d3_makeCopier(),
 		},
+		Indexes: []entity.Index{
+
+			{Name: "user_email_idx", Columns: []string{"email"}, Unique: true},
+		},
 	}
 }
 

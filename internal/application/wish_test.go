@@ -11,13 +11,13 @@ func TestNewWish(t *testing.T) {
 	repo := &inMemoryUserRepo{}
 	user, _ := domain.NewUser("test", "test@test.com")
 	assert.NoError(t, repo.Add(context.Background(), user))
-	service := NewWishService(repo)
+	service := NewWishService(repo, nil)
 	assert.NoError(t, service.NewWish(context.Background(), 0, "some title"))
 }
 
 func TestNewWishFailIfUserNotFound(t *testing.T) {
 	repo := &inMemoryUserRepo{}
-	service := NewWishService(repo)
+	service := NewWishService(repo, nil)
 	assert.Error(t, service.NewWish(context.Background(), 0, "some title"))
 }
 

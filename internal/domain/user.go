@@ -15,6 +15,7 @@ func (e Email) isValid() bool {
 
 //d3:entity
 //d3_table:lw_user
+//d3_index_unique:user_email_idx(email)
 type User struct {
 	id      sql.NullInt64      `d3:"pk:auto"`
 	name    string             `d3:"column:name"`
